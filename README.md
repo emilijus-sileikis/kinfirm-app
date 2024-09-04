@@ -59,15 +59,15 @@
 Products URL:
     ```
     YOUR_LOCAL_URL/products
-    ```
+    ```<br>
 Specific product URL:
     ```
     YOUR_LOCAL_URL/products/{$id}
-    ```
+    ```<br>
 Products export API URL (for testing purposes):
     ```
     YOUR_LOCAL_URL/api/products?token=strongtoken3
-    ```
+    ```<br>
 
 ## Cron Job Example:
 
