@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Tag;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -11,13 +13,22 @@ class ProductController extends Controller
     {
         $products = Product::with('tags')->paginate(9);
 
-        return view('products.index', compact('products'));
+        // Retireve the 10 most popular tag ids
+        $popularTags = DB::table('tags')
+            ->join('product_tag', 'tags.id', '=', 'product_tag.tag_id')
+            ->select('tags.title', DB::raw('count(product_tag.tag_id) as product_count'))
+            ->groupBy('tags.id', 'tags.title')
+            ->orderByDesc('product_count')
+            ->limit(10)
+            ->get();
+
+        return view('products.index', compact('products', 'popularTags'));
     }
 
     public function show($id)
     {
         // Retrieve product details from cache
-        $product = Cache::remember("product_details_{$id}", now()->addMinutes(10), function() use ($id) {
+        $product = Cache::remember("product_details_{$id}", now()->addMinutes(30), function() use ($id) {
             return Product::with('tags')->where('id', $id)->firstOrFail();
         });
 
